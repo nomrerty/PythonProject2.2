@@ -34,6 +34,23 @@ class Product:
             self.__price = value
 
 
+class Smartphone(Product):
+    def __init__(self, name, price, quantity, efficiency, model, memory, color, description=" "):
+        super().__init__(name, price, quantity, description)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
+
+
+class LawnGrass(Product):
+    def __init__(self, name, price, quantity, country, germination_period, color, description=" "):
+        super().__init__(name, price, quantity, description)
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
+
+
 class Category:
     name: str
     description: str
@@ -58,7 +75,7 @@ class Category:
             self.__products.append(product)
             Category.product_count += 1
         else:
-            raise ValueError("Можно добавлять только объекты класса Product")
+            raise ValueError("Можно добавлять только объекты класса Product или его наследников")
 
     @property
     def products(self):
