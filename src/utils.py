@@ -1,14 +1,37 @@
 class Product:
     name: str
     description: str
-    price: int
+    price: float
     quantity: int
 
-    def __init__(self, name, description, price, quantity):
-        self.name = name
+    def __init__(self, name, price, quantity, description=" "):
         self.description = description
-        self.price = price
+        self.name = name
+        self.__price = price
         self.quantity = quantity
+
+    @classmethod
+    def new_product(cls, product_data):
+        required_atribute = ["name", "price", "quantity"]
+        if not all(key in product_data for key in required_atribute):
+            raise ValueError("Отсутствуют обязательные ключи: name, price, quantity")
+        return cls(
+            product_data["name"],
+            product_data["price"],
+            product_data["quantity"],
+            product_data.get("description", "")
+        )
+
+    @property
+    def price(self):
+        return self.__price
+
+    @price.setter
+    def price(self, value):
+        if value <= 0:
+            print("Цена не должна быть нулевая или отрицательная")
+        else:
+            self.__price = value
 
 
 class Category:
@@ -22,8 +45,26 @@ class Category:
     def __init__(self, name, description, products):
         self.name = name
         self.description = description
-        self.products = products
+        self.__products = []
+        if products:
+            for product in products:
+                self.add_product(product)
 
         Category.category_count += 1
-        Category.product_count = len(products)
-# Он не видит
+        Category.product_count += len(products)
+
+    def add_product(self, product: Product):
+        if isinstance(product, Product):
+            self.__products.append(product)
+            Category.product_count += 1
+        else:
+            raise ValueError("Можно добавлять только объекты класса Product")
+
+    @property
+    def products(self):
+        result = []
+        for product in self.__products:
+            result.append(
+                f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт."
+            )
+        return result
