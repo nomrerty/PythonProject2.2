@@ -85,3 +85,4 @@ class Category:
                 f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт."
             )
         return result
+# Опять проблемы с комитом
