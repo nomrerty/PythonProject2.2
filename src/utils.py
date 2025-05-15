@@ -4,22 +4,39 @@ class Product:
     price: float
     quantity: int
 
-    def __init__(self, name, price, quantity, description=" "):
+    def __init__(self, name, description, price, quantity):
+        # Конструктор класса Product
         self.description = description
         self.name = name
         self.__price = price
         self.quantity = quantity
 
+    def __str__(self):
+        # Магический метод для строкового представления объекта
+        # Возвращает строку в формате: "Название, цена руб. Остаток: кол-во шт."
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        # Магический метод
+        # (цена * количество)
+        if not isinstance(other, Product):
+            # исключение
+            return NotImplemented
+        total = self.price * self.quantity + other.price * other.quantity
+        return total
+
     @classmethod
     def new_product(cls, product_data):
-        required_atribute = ["name", "price", "quantity"]
+        required_atribute = ["name", "description", "price", "quantity"]
         if not all(key in product_data for key in required_atribute):
-            raise ValueError("Отсутствуют обязательные ключи: name, price, quantity")
+            raise ValueError(
+                "Отсутствуют обязательные ключи: name, description, price, quantity"
+            )
         return cls(
             product_data["name"],
+            product_data["description"],
             product_data["price"],
             product_data["quantity"],
-            product_data.get("description", "")
         )
 
     @property
@@ -32,23 +49,6 @@ class Product:
             print("Цена не должна быть нулевая или отрицательная")
         else:
             self.__price = value
-
-
-class Smartphone(Product):
-    def __init__(self, name, price, quantity, efficiency, model, memory, color, description=" "):
-        super().__init__(name, price, quantity, description)
-        self.efficiency = efficiency
-        self.model = model
-        self.memory = memory
-        self.color = color
-
-
-class LawnGrass(Product):
-    def __init__(self, name, price, quantity, country, germination_period, color, description=" "):
-        super().__init__(name, price, quantity, description)
-        self.country = country
-        self.germination_period = germination_period
-        self.color = color
 
 
 class Category:
@@ -71,18 +71,19 @@ class Category:
         Category.product_count += len(products)
 
     def add_product(self, product: Product):
+        # Метод добавления товара в категорию
         if isinstance(product, Product):
             self.__products.append(product)
             Category.product_count += 1
         else:
-            raise ValueError("Можно добавлять только объекты класса Product или его наследников")
+            raise ValueError("Можно добавлять только объекты класса Product")
 
     @property
     def products(self):
-        result = []
-        for product in self.__products:
-            result.append(
-                f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт."
-            )
-        return result
-# Опять проблемы с комитом
+        return [str(product) for product in self.__products]
+
+    def __str__(self):
+        # Магический метод
+        # Возвращает строку с названием и количеством товаров
+        total_quantity = sum(product.quantity for product in self.__products)
+        return f"{self.name}, количество продуктов: {total_quantity} шт."
