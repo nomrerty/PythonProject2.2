@@ -1,29 +1,24 @@
-class Product:
+from abc import ABC, abstractmethod
+
+
+class Product(ABC):
     name: str
     description: str
     price: float
     quantity: int
 
     def __init__(self, name, description, price, quantity):
-        # Конструктор класса Product
         self.description = description
         self.name = name
         self.__price = price
         self.quantity = quantity
 
     def __str__(self):
-        # Магический метод для строкового представления объекта
-        # Возвращает строку в формате: "Название, цена руб. Остаток: кол-во шт."
         return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
 
+    @abstractmethod
     def __add__(self, other):
-        # Магический метод
-        # (цена * количество)
-        if not isinstance(other, Product):
-            # исключение
-            return NotImplemented
-        total = self.price * self.quantity + other.price * other.quantity
-        return total
+        pass
 
     @classmethod
     def new_product(cls, product_data):
@@ -51,6 +46,35 @@ class Product:
             self.__price = value
 
 
+class Smartphone(Product):
+    def __init__(self, name: str, description: str, price: float, quantity: int,
+                 efficiency: str, model: str, memory: int, color: str):
+        super().__init__(name, description, price, quantity)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
+
+    def __add__(self, other):
+        if not isinstance(other, type(self)):
+            raise TypeError("Нельзя складывать товары разных классов")
+        return round(self.price * self.quantity + other.price * other.quantity, 2)
+
+
+class LawnGrass(Product):
+    def __init__(self, name: str, description: str, price: float, quantity: int,
+                 country: str, germination_period: int, color: str):
+        super().__init__(name, description, price, quantity)
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
+
+    def __add__(self, other):
+        if not isinstance(other, type(self)):
+            raise TypeError("Нельзя складывать товары разных классов")
+        return round(self.price * self.quantity + other.price * other.quantity, 2)
+
+
 class Category:
     name: str
     description: str
@@ -59,7 +83,7 @@ class Category:
     category_count = 0
     product_count = 0
 
-    def __init__(self, name, description, products):
+    def __init__(self, name, description, products=None):
         self.name = name
         self.description = description
         self.__products = []
@@ -68,22 +92,19 @@ class Category:
                 self.add_product(product)
 
         Category.category_count += 1
-        Category.product_count += len(products)
+        if products:
+            Category.product_count += len(products)
 
     def add_product(self, product: Product):
-        # Метод добавления товара в категорию
-        if isinstance(product, Product):
-            self.__products.append(product)
-            Category.product_count += 1
-        else:
-            raise ValueError("Можно добавлять только объекты класса Product")
+        if not isinstance(product, Product):
+            raise TypeError("Можно добавлять только объекты класса Product или его наследников")
+        self.__products.append(product)
+        Category.product_count += 1
 
     @property
     def products(self):
         return [str(product) for product in self.__products]
 
     def __str__(self):
-        # Магический метод
-        # Возвращает строку с названием и количеством товаров
         total_quantity = sum(product.quantity for product in self.__products)
         return f"{self.name}, количество продуктов: {total_quantity} шт."
