@@ -56,7 +56,7 @@ class Smartphone(Product):
         self.color = color
 
     def __add__(self, other):
-        if not isinstance(other, type(self)):
+        if type(other) != type(self):  #  использование type()
             raise TypeError("Нельзя складывать товары разных классов")
         return round(self.price * self.quantity + other.price * other.quantity, 2)
 
@@ -70,7 +70,7 @@ class LawnGrass(Product):
         self.color = color
 
     def __add__(self, other):
-        if not isinstance(other, type(self)):
+        if type(other) != type(self):  # Явное использование type()
             raise TypeError("Нельзя складывать товары разных классов")
         return round(self.price * self.quantity + other.price * other.quantity, 2)
 
