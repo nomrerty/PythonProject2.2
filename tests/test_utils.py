@@ -308,3 +308,9 @@ def test_category_product_count():
     assert Category.product_count == 1
     category.add_product(smartphone2)
     assert Category.product_count == 2
+
+
+def test_infoprintmixin_prints_on_init(capsys):
+    product = Product("Продукт1", "Описание продукта", 1200, 10)
+    captured = capsys.readouterr()
+    assert "Product('Продукт1', 'Описание продукта', 1200, 10)".split("(")[0] in captured.out

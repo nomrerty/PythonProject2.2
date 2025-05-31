@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class Product(ABC):
+class BaseProduct(ABC):
     name: str
     description: str
     price: float
@@ -13,12 +13,31 @@ class Product(ABC):
         self.__price = price
         self.quantity = quantity
 
-    def __str__(self):
-        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
-
     @abstractmethod
     def __add__(self, other):
         pass
+
+    @property
+    def price(self):
+        return self.__price
+
+    @price.setter
+    def price(self, value):
+        if value <= 0:
+            print("Цена не должна быть нулевая или отрицательная")
+        else:
+            self.__price = value
+
+
+class InfoPrintMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        print(f"{self.__class__.__name__}{args}")
+
+
+class Product(InfoPrintMixin, BaseProduct):
+    def __str__(self):
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
 
     @classmethod
     def new_product(cls, product_data):
@@ -33,17 +52,6 @@ class Product(ABC):
             product_data["price"],
             product_data["quantity"],
         )
-
-    @property
-    def price(self):
-        return self.__price
-
-    @price.setter
-    def price(self, value):
-        if value <= 0:
-            print("Цена не должна быть нулевая или отрицательная")
-        else:
-            self.__price = value
 
 
 class Smartphone(Product):
