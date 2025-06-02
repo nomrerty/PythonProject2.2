@@ -1,14 +1,88 @@
-class Product:
+from abc import ABC, abstractmethod
+
+
+class BaseProduct(ABC):
     name: str
     description: str
-    price: int
+    price: float
     quantity: int
 
     def __init__(self, name, description, price, quantity):
-        self.name = name
+        if quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
         self.description = description
-        self.price = price
+        self.name = name
+        self.__price = price
         self.quantity = quantity
+
+    @abstractmethod
+    def __add__(self, other):
+        pass
+
+    @property
+    def price(self):
+        return self.__price
+
+    @price.setter
+    def price(self, value):
+        if value <= 0:
+            print("Цена не должна быть нулевая или отрицательная")
+        else:
+            self.__price = value
+
+
+class InfoPrintMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        print(f"{self.__class__.__name__}{args}")
+
+
+class Product(InfoPrintMixin, BaseProduct):
+    def __str__(self):
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
+
+    @classmethod
+    def new_product(cls, product_data):
+        required_atribute = ["name", "description", "price", "quantity"]
+        if not all(key in product_data for key in required_atribute):
+            raise ValueError(
+                "Отсутствуют обязательные ключи: name, description, price, quantity"
+            )
+        return cls(
+            product_data["name"],
+            product_data["description"],
+            product_data["price"],
+            product_data["quantity"],
+        )
+
+
+class Smartphone(Product):
+    def __init__(self, name: str, description: str, price: float, quantity: int,
+                 efficiency: str, model: str, memory: int, color: str):
+        super().__init__(name, description, price, quantity)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
+
+    def __add__(self, other):
+        if not isinstance(other, type(self)):
+            raise TypeError("Нельзя складывать товары разных классов")
+        return round(self.price * self.quantity + other.price * other.quantity, 2)
+
+
+class LawnGrass(Product):
+    def __init__(self, name: str, description: str, price: float, quantity: int,
+                 country: str, germination_period: int, color: str):
+        super().__init__(name, description, price, quantity)
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
+
+    def __add__(self, other):
+        if not isinstance(other, type(self)):
+            raise TypeError("Нельзя складывать товары разных классов")
+        return round(self.price * self.quantity + other.price * other.quantity, 2)
 
 
 class Category:
@@ -19,11 +93,49 @@ class Category:
     category_count = 0
     product_count = 0
 
-    def __init__(self, name, description, products):
+    def __init__(self, name, description, products=None):
         self.name = name
         self.description = description
-        self.products = products
+        self.__products = []
+        if products:
+            for product in products:
+                self.add_product(product)
 
         Category.category_count += 1
-        Category.product_count = len(products)
-# Он не видит
+        if products:
+            Category.product_count += len(products)
+
+    def add_product(self, product: Product):
+        if not isinstance(product, Product):
+            raise TypeError("Можно добавлять только объекты класса Product или его наследников")
+        self.__products.append(product)
+        Category.product_count += 1
+
+    @property
+    def products(self):
+        return [str(product) for product in self.__products]
+
+    def average_price(self):
+        try:
+            total_price = sum(product.price for product in self.__products)
+            count = len(self.__products)
+            return total_price / count
+        except ZeroDivisionError:
+            return 0
+
+    def __str__(self):
+        total_quantity = sum(product.quantity for product in self.__products)
+        return f"{self.name}, количество продуктов: {total_quantity} шт."
+
+
+class TV(Product):
+    def __init__(self, name: str, description: str, price: float, quantity: int, diagonal: str, backlight: str):
+        super().__init__(name, description, price, quantity)
+        self.diagonal = diagonal
+        self.backlight = backlight
+
+    def __add__(self, other):
+        if not isinstance(other, type(self)):
+            raise TypeError("Нельзя складывать товары разных классов")
+        return round(self.price * self.quantity + other.price * other.quantity, 2)
+# Домашка не пушится
