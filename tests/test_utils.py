@@ -309,3 +309,23 @@ def test_category_product_count():
     assert Category.product_count == 1
     category.add_product(smartphone2)
     assert Category.product_count == 2
+
+
+def test_product_zero_quantity_raises():
+    with pytest.raises(ValueError, match="Товар с нулевым количеством не может быть добавлен"):
+        Smartphone("Test Product", "Test Description", 100.0, 0, "High", "Model", 128, "Black")
+    with pytest.raises(ValueError, match="Товар с нулевым количеством не может быть добавлен"):
+        LawnGrass("Газонная трава", "Трава для газона", 299.99, 0, "Россия", 14, "Зеленый")
+
+
+def test_category_average_price():
+    # Категория без товаров
+    category_empty = Category("Empty", "No products")
+    assert category_empty.average_price() == 0
+
+    # Категория с товарами
+    product1 = Smartphone("Product 1", "Desc 1", 100.0, 2, "High", "Model1", 64, "White")
+    product2 = Smartphone("Product 2", "Desc 2", 200.0, 3, "High", "Model2", 128, "Black")
+    category = Category("Test Category", "Test Description", [product1, product2])
+    expected_avg = (product1.price + product2.price) / 2
+    assert category.average_price() == expected_avg

@@ -96,13 +96,13 @@ smartphones.add_product(iphone)
 PythonProject2/
 ├── src/
 │   ├── init.py
-│   └── utils.pu
+│   └── utils.py
 ├── tests/
 │   ├── init.py
 │   └── test_utils.py
 └── main.py
 🧪 Тестирование
-Покрытие кода: 85%
+Покрытие кода: 92%
 
 Используется pytest
 
