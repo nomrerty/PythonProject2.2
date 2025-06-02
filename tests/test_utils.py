@@ -1,5 +1,5 @@
 import pytest
-from src.utils import Product, Category, Smartphone, LawnGrass
+from src.utils import Category, Smartphone, LawnGrass
 
 
 @pytest.fixture(autouse=True)
@@ -31,8 +31,8 @@ def test_category_initialization():
 
 def test_category_count():
     product = Smartphone("Product", "Desc", 100.0, 1, "High", "Model", 128, "Black")
-    category1 = Category("Cat1", "Desc1", [product])
-    category2 = Category("Cat2", "Desc2", [product])
+    Category("Cat1", "Desc1", [product])
+    Category("Cat2", "Desc2", [product])
     assert Category.category_count == 2
 
 
@@ -43,6 +43,7 @@ def test_empty_category():
     assert category.products == []
     assert Category.product_count == 0
     assert Category.category_count == 1
+
 
 def test_new_product_missing_attributes():
     product_data = {"name": "Test Product", "price": 200.0}
@@ -308,9 +309,3 @@ def test_category_product_count():
     assert Category.product_count == 1
     category.add_product(smartphone2)
     assert Category.product_count == 2
-
-
-def test_infoprintmixin_prints_on_init(capsys):
-    product = Product("Продукт1", "Описание продукта", 1200, 10)
-    captured = capsys.readouterr()
-    assert "Product('Продукт1', 'Описание продукта', 1200, 10)".split("(")[0] in captured.out

@@ -64,7 +64,7 @@ class Smartphone(Product):
         self.color = color
 
     def __add__(self, other):
-        if type(other) != type(self):  #  использование type()
+        if not isinstance(other, type(self)):
             raise TypeError("Нельзя складывать товары разных классов")
         return round(self.price * self.quantity + other.price * other.quantity, 2)
 
@@ -78,7 +78,7 @@ class LawnGrass(Product):
         self.color = color
 
     def __add__(self, other):
-        if type(other) != type(self):  # Явное использование type()
+        if not isinstance(other, type(self)):
             raise TypeError("Нельзя складывать товары разных классов")
         return round(self.price * self.quantity + other.price * other.quantity, 2)
 
@@ -116,4 +116,16 @@ class Category:
     def __str__(self):
         total_quantity = sum(product.quantity for product in self.__products)
         return f"{self.name}, количество продуктов: {total_quantity} шт."
-#Домашка не пушится
+
+
+class TV(Product):
+    def __init__(self, name: str, description: str, price: float, quantity: int, diagonal: str, backlight: str):
+        super().__init__(name, description, price, quantity)
+        self.diagonal = diagonal
+        self.backlight = backlight
+
+    def __add__(self, other):
+        if not isinstance(other, type(self)):
+            raise TypeError("Нельзя складывать товары разных классов")
+        return round(self.price * self.quantity + other.price * other.quantity, 2)
+# Домашка не пушится
